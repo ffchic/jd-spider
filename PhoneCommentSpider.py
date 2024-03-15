@@ -8,6 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 from py_JDComment import JDComment
 
+
 brand_thre = {}
 product_thre = {}
 error_num = 0
