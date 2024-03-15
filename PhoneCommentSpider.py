@@ -7,6 +7,7 @@ import codecs
 import requests
 from bs4 import BeautifulSoup
 
+
 class Spider:
     def __init__(self, comment_url, product_list=None,finish_list=None ,download_path="download/", proxy_file=None):
 
