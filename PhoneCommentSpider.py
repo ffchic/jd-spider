@@ -6,10 +6,22 @@ import random
 import codecs
 import requests
 from bs4 import BeautifulSoup
+from py_JDComment import JDComment
 
+brand_thre = {}
+product_thre = {}
+error_num = 0
+
+def random_dic(dicts):
+    dict_key_ls = list(dicts.keys())
+    random.shuffle(dict_key_ls)
+    new_dic = {}
+    for key in dict_key_ls:
+        new_dic[key] = dicts.get(key)
+    return new_dic
 
 class Spider:
-    def __init__(self, comment_url, product_list=None,finish_list=None ,download_path="download/", proxy_file=None):
+    def __init__(self, comment_url, product_list=None,brand_list=None, finish_list=None ,download_path="download/", proxy_file=None):
 
         self.comment_url = comment_url
 
@@ -24,10 +36,10 @@ class Spider:
         # 加载商品id
         if not product_list:
             self.crawl_product_list()
-            with codecs.open("products.json",'r',encoding='utf-8') as f:
-                self.products = json.loads(f.read())
         else:
             self.products = json.load(open(product_list,'r',encoding='utf-8'))
+            self.products = random_dic(self.products)
+            self.brand = json.load(open(brand_list,'r',encoding='utf-8'))
 
         # 加载已完成的列表
         self.finish_list = set()
@@ -49,11 +61,13 @@ class Spider:
             print("[ERROR] Status Code ERROR ...")
         else:
             product_dict = {}
+            brand_dict = {}
             soup = BeautifulSoup(web_source.content.decode("utf8"), 'lxml')
             # 拿到所有手机品牌的链接
             _temp = soup.find_all(name="ul",attrs={"class":"J_valueList v-fixed"})
             all_brands = _temp[0].find_all(name="a")
             for i,url_object in enumerate(all_brands):
+                title = url_object.attrs['title']
                 print("[INFO {}/{}] get product id for brand [{}]".format(i,len(all_brands),url_object.attrs['title']))
                 brand_url = "https://list.jd.com" + url_object.attrs['href']
                 # 请求品牌对应的产品列表
@@ -68,44 +82,76 @@ class Spider:
                         name = product.find_all(name="em")[-1].text
                         code = product.attrs['data-sku']
                         product_dict[code] = name
+                        brand_dict[code] = title
                 # 休眠 防止被检测到
                 time.sleep(random.randint(8,20))
             with codecs.open("products.json", 'w', encoding='utf-8') as f:
                 json.dump(product_dict, f, ensure_ascii=False)
+            with codecs.open("brand_dict.json", 'w', encoding='utf-8') as f:
+                json.dump(brand_dict, f, ensure_ascii=False)
             print("[INFO] crawl product list ...")
 
     def crawl_once(self,code,name,idx,cnt):
-        tgt_url = self.comment_url.format(code)
+        tgt_url = self.comment_url.format(code,1)
         web_source = requests.get(tgt_url, headers=self.REQUEST_HEADER)
+        json_text = web_source.content.decode("UTF-8")
+        json_comments = re.findall(r"[(](.*)[)]", json_text)[0]
+        comments_dict = json.loads(json_comments)
+        maxPage = comments_dict.get("maxPage", 1)
 
         print("[{}/{} | STATUS CODE:[{}]]start crawl {}".format(idx,cnt,web_source.status_code,name))
         if web_source.status_code != 200:
-
             print("[ERROR] Status Code ERROR, start chrome for cookies ...")
 
         else:
-            soup = BeautifulSoup(web_source.content.decode("UTF-8"), 'lxml')
-            if soup.find(name="p"):
-                self.save_data(soup.find(name="p").text,name)
-            else:
-                print("[warn] cannot find json comments ...")
+            for page in range(1, maxPage+1):
+                if product_thre.get(code,0) > 20000:
+                    print("商品：",code,"  数量：", product_thre.get(code,0), "达到上限")
+                    break
+                tgt_url = self.comment_url.format(code, page)
+                web_source = requests.get(tgt_url, headers=self.REQUEST_HEADER)
 
-            time.sleep(random.randint(8,20))
+                print("     [{}/{} | STATUS CODE:[{}]]start crawl {}".format(page, maxPage+1, web_source.status_code, name))
 
-    def save_data(self,json_text,name):
-        saved_path = os.path.join(self.download_path,name)
-        save_file = os.path.join(saved_path,"{}.txt".format(int(time.time())))
-        res = []
-        if not os.path.exists(saved_path):
-            os.mkdir(saved_path)
+
+                if web_source.status_code != 200:
+                    print("[ERROR] Status Code ERROR, start chrome for cookies ...")
+                soup = BeautifulSoup(web_source.content.decode("UTF-8"), 'lxml')
+                if soup.find(name="p"):
+                    self.save_data(soup.find(name="p").text, name, code)
+                else:
+                    print("[warn] cannot find json comments ...")
+
+                time.sleep(random.randint(1,3))
+
+
+    def save_data(self,json_text,name,code):
+        global error_num
         try:
             json_comments = re.findall(r"[(](.*)[)]",json_text)[0]
             comments_dict = json.loads(json_comments)
+            data = []
             for comment in comments_dict['comments']:
-                res.append(comment['content'])
-            with open(save_file,"w",encoding="utf-8") as f:
-                f.write("\n\n".join(res))
+                # 商家回复：replies  #追评价：afterUserComment -> content  # 图片： images len()
+                brand = self.brand[code]
+                product_id = int(code)
+                content = comment.get("content")
+                append_content = 1 if comment.get("afterUserComment",{}).get("content", False) else 0
+                seller_reply = 1 if comment.get("replies",False) else 0
+                score = comment.get("score", 5)
+                is_good = 1 if score >= 3 else 0
+                image_count = len(comment.get("images", []))
+                d = (brand, name, product_id, content, append_content, seller_reply, score, is_good, image_count,)
+                data.append(d)
+            JDComment().insert_comment(data)
+            product_thre[code] = product_thre.get(code, 0) + len(data)
+            brand_thre[self.brand[code]] = brand_thre.get(self.brand[code], 0) + len(data)
+
         except:
+            time.sleep(20)
+            error_num+=1
+            if error_num >= 300:
+                raise ValueError("报错，可能ip被封")
             print("[error ]re cannot match json comments ..")
 
     def run(self):
@@ -113,13 +159,17 @@ class Spider:
         idx = 1
         for key,name in self.products.items():
             if key in self.finish_list:continue
-
+            if brand_thre.get(self.brand[key],0) > 200000:
+                print("品牌：", self.brand[key], "数量：", brand_thre.get(self.brand[key]), "达到上限")
+                continue
             name = re.sub(r"[-()\"\n\t\\#/@;:<>{}`+=~|.!?,]", "", name)
             self.crawl_once(key,name,idx,product_count)
+
             idx += 1
 
             with open("finish.txt","a+") as f:
                 f.write(key+"\n")
+
 
         print("spider run over ... ")
 """
@@ -143,12 +193,12 @@ class Spider:
 if __name__ == '__main__':
     # page为评论页数
     product_comment_url = "https://club.jd.com/comment/productPageComments.action?callback=fetchJSON_comment98&" \
-                          "productId={}&score=0&sortType=5&page=2&pageSize=10&isShadowSku=0&rid=0&fold=1"
+                          "productId={}&score=0&sortType=5&page={}&pageSize=10&isShadowSku=0&rid=0&fold=1"
 
     # 未获取product id
     # spider = Spider(product_comment_url)
 
     # 已经拿到product id文件后
-    spider = Spider(product_comment_url,"products.json","finish.txt")
+    spider = Spider(product_comment_url,"products.json", "brand_dict.json", "finish.txt")
 
     spider.run()
