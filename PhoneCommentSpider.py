@@ -25,7 +25,7 @@ class Spider:
         if not product_list:
             self.crawl_product_list()
             with codecs.open("products.json",'r',encoding='utf-8') as f:
-                print(">>>",f.read())
+                self.products = json.loads(f.read())
         else:
             self.products = json.load(open(product_list,'r',encoding='utf-8'))
 
@@ -48,11 +48,12 @@ class Spider:
         if web_source.status_code != 200:
             print("[ERROR] Status Code ERROR ...")
         else:
+            product_dict = {}
             soup = BeautifulSoup(web_source.content.decode("utf8"), 'lxml')
             # 拿到所有手机品牌的链接
             _temp = soup.find_all(name="ul",attrs={"class":"J_valueList v-fixed"})
             all_brands = _temp[0].find_all(name="a")
-            for i,url_object in enumerate(all_brands[:2]):
+            for i,url_object in enumerate(all_brands):
                 print("[INFO {}/{}] get product id for brand [{}]".format(i,len(all_brands),url_object.attrs['title']))
                 brand_url = "https://list.jd.com" + url_object.attrs['href']
                 # 请求品牌对应的产品列表
@@ -63,16 +64,14 @@ class Spider:
                     products_soup = BeautifulSoup(brand_products_source.content.decode("utf8"), 'lxml')
                     # 处理第一页的30条数据，拿到id号和title名称
                     products = products_soup.find_all(name="li",attrs={"class":"gl-item"})
-                    product_dict = {}
                     for product in products:
                         name = product.find_all(name="em")[-1].text
                         code = product.attrs['data-sku']
                         product_dict[code] = name
-                    with codecs.open("products.json", 'w', encoding='utf-8') as f:
-                        json.dump(product_dict, f, ensure_ascii=False)
                 # 休眠 防止被检测到
                 time.sleep(random.randint(8,20))
-
+            with codecs.open("products.json", 'w', encoding='utf-8') as f:
+                json.dump(product_dict, f, ensure_ascii=False)
             print("[INFO] crawl product list ...")
 
     def crawl_once(self,code,name,idx,cnt):
@@ -85,7 +84,7 @@ class Spider:
             print("[ERROR] Status Code ERROR, start chrome for cookies ...")
 
         else:
-            soup = BeautifulSoup(web_source.content.decode("gbk"), 'lxml')
+            soup = BeautifulSoup(web_source.content.decode("UTF-8"), 'lxml')
             if soup.find(name="p"):
                 self.save_data(soup.find(name="p").text,name)
             else:
@@ -147,9 +146,9 @@ if __name__ == '__main__':
                           "productId={}&score=0&sortType=5&page=2&pageSize=10&isShadowSku=0&rid=0&fold=1"
 
     # 未获取product id
-    spider = Spider(product_comment_url)
+    # spider = Spider(product_comment_url)
 
     # 已经拿到product id文件后
-    # spider = Spider(product_comment_url,"products.json","finish.txt")
+    spider = Spider(product_comment_url,"products.json","finish.txt")
 
     spider.run()
