@@ -30,7 +30,7 @@ class Spider:
             [line.strip() for line in open(proxy_file,'r').readlines()]
 
         self.REQUEST_HEADER = {
-            "Cookie":"shshshfp=24670528370b016eb37cacadd64cb534; shshshfpa=1c9d3201-b6f3-0e8a-1b47-e3b8f1037e16-1680933557; shshshfpx=1c9d3201-b6f3-0e8a-1b47-e3b8f1037e16-1680933557; joyya=1705330053.0.6.0yb4taj; __jdu=1705330053829963086395; wlfstk_smdl=vv5uj97stjokh1yq0cr6qsfprljgun4p; __jdv=95931165|direct|-|none|-|1710425584935; _pst=jd_41d80db23f448; logintype=wx; unick=Suffer-x1; pin=jd_41d80db23f448; npin=jd_41d80db23f448; thor=2BCAE5D481724A06FCB86BAC61D72D8E7CC0690A9C1C93CDBC9C21DEEAD027AE2A147915AB02970AB58301A2CA12C550C3F024DC3288B3B64A3535E0CED9C13E0AEEE36F61DDC74EBB8C79BB0AD4E90ABE04FAD78F5F9E765C74FB4048B4896E4B457B0D6D1F285B64C744F1F340C8D10E16540FC555F858D8C7D0FEC5B2AA434A8761F3DA3706BE7B6028A97CDBA9F4516D0397D200469E2B051889B99D31C8; flash=2_Y-vhED9OYBf8od6vWsvzUPJqoLouFQkQavJF0E4PrHeSjswq0OXKYARWYL30fzNSPgcYlT-l60Eo9ZmQNm-H5zqPytD5mw-NcGxV1nJ3Yij*; _tp=ZWuUEiNZ%2FElhLY3OF%2BkNrbz8AC5etjCAcIgaOV9j9iE%3D; pinId=NfUb5jjwv3B7-MDyGwqXB7V9-x-f3wj7; ipLoc-djd=1-2901-0-0; __jda=29846306.1705330053829963086395.1705330054.1706538576.1710425585.3; __jdc=29846306; jsavif=1; jsavif=1; areaId=1; avif=1; xapieid=jdd03YJKTW2LSZF2AH3FJ5OTGVXILJTNAOA3UQN5WDLHLKKYAJQVSJCWU3ASH57TFXTP2WH4UVL7Z2A7OOAVSVSV6MXW2JYAAAAMOHVHVSBQAAAAADYYASIAMFQS4NIX; __jdb=29846306.6.1705330053829963086395|3.1710425585; 3AB9D23F7A4B3CSS=jdd03YJKTW2LSZF2AH3FJ5OTGVXILJTNAOA3UQN5WDLHLKKYAJQVSJCWU3ASH57TFXTP2WH4UVL7Z2A7OOAVSVSV6MXW2JYAAAAMOHVNOIHIAAAAACDBOY6EHHOUWBQX; _gia_d=1; shshshfpb=BApXe1HFSPutAa5wRRLTgPqmOis9Kxc_MB8LSMnhr9xJ1Mjl-uIO2; 3AB9D23F7A4B3C9B=YJKTW2LSZF2AH3FJ5OTGVXILJTNAOA3UQN5WDLHLKKYAJQVSJCWU3ASH57TFXTP2WH4UVL7Z2A7OOAVSVSV6MXW2JY",
+            "Cookie":"wlfstk_smdl=hqhwukb2a12ltdi8l7ysuo37e382oby6; __jdv=95931165|direct|-|none|-|1710515781563; __jdu=17105157815621457862545; _pst=jd_41d80db23f448; logintype=wx; unick=Suffer-x1; pin=jd_41d80db23f448; npin=jd_41d80db23f448; thor=2BCAE5D481724A06FCB86BAC61D72D8E7CC0690A9C1C93CDBC9C21DEEAD027AE745F96FE4E32B8E2A0AAA6C333C0FB1B7C2337E586C6F52B96A6206C303CDA0977D7E7C952975B4E72FBB23FF55C6CDE400EF2B296D762616032F018864ED021F2BE846901C3F4A8AB0E32D1ADB41170B46346A60E9C78B212B9B30FE56E49557EF2DD332A5B56AB6BEE98F0AFFA013AFD798807B94A8C6F7D1ADDF746743046; flash=2_fouGCeKL57nt7FmB0Omd13M7bdMm-MgiEle2aQYMBq32npEAG3X-fh7PTPxtI2xDjuttMAulwyBdBZ3fPmLLjwp38vAdiV8_HhA93GSpWoj*; _tp=ZWuUEiNZ%2FElhLY3OF%2BkNrbz8AC5etjCAcIgaOV9j9iE%3D; pinId=NfUb5jjwv3B7-MDyGwqXB7V9-x-f3wj7; ipLoc-djd=1-2800-0-0; __jda=29846306.17105157815621457862545.1710515782.1710515782.1710515782.1; __jdc=29846306; jsavif=1; jsavif=1; shshshfpa=96641626-b302-2ce7-126e-cbd53c089ea1-1710515813; shshshfpx=96641626-b302-2ce7-126e-cbd53c089ea1-1710515813; 3AB9D23F7A4B3CSS=jdd03ZLO3XPAALRWLT3Z6INJAVEMQI7GFAT5YAFMPM7O7KC4RP3DOKWZSMSBK36RROLG6CN3L4R5AFXZFBXU6VTU3WCX5GAAAAAMOIKX757QAAAAACOZC5KUTO3Z7P4X; _gia_d=1; xapieid=jdd03ZLO3XPAALRWLT3Z6INJAVEMQI7GFAT5YAFMPM7O7KC4RP3DOKWZSMSBK36RROLG6CN3L4R5AFXZFBXU6VTU3WCX5GAAAAAMOIKX757QAAAAACOZC5KUTO3Z7P4X; areaId=1; __jdb=29846306.6.17105157815621457862545|1.1710515782; shshshfpb=BApXeY8G4QetAkrg2QUXCU6CnoqKHzi97BlIQXzxo9xJ1MsBd6YO2; 3AB9D23F7A4B3C9B=ZLO3XPAALRWLT3Z6INJAVEMQI7GFAT5YAFMPM7O7KC4RP3DOKWZSMSBK36RROLG6CN3L4R5AFXZFBXU6VTU3WCX5GA",
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
         }
 
@@ -39,7 +39,7 @@ class Spider:
             self.crawl_product_list()
         else:
             self.products = json.load(open(product_list,'r',encoding='utf-8'))
-            self.products = random_dic(self.products)
+            # self.products = random_dic(self.products)
             self.brand = json.load(open(brand_list,'r',encoding='utf-8'))
 
         # 加载已完成的列表
@@ -128,32 +128,32 @@ class Spider:
 
     def save_data(self,json_text,name,code):
         global error_num
-        try:
-            json_comments = re.findall(r"[(](.*)[)]",json_text)[0]
-            comments_dict = json.loads(json_comments)
-            data = []
-            for comment in comments_dict['comments']:
-                # 商家回复：replies  #追评价：afterUserComment -> content  # 图片： images len()
-                brand = self.brand[code]
-                product_id = int(code)
-                content = comment.get("content")
-                append_content = 1 if comment.get("afterUserComment",{}).get("content", False) else 0
-                seller_reply = 1 if comment.get("replies",False) else 0
-                score = comment.get("score", 5)
-                is_good = 1 if score >= 3 else 0
-                image_count = len(comment.get("images", []))
-                d = (brand, name, product_id, content, append_content, seller_reply, score, is_good, image_count,)
-                data.append(d)
-            JDComment().insert_comment(data)
-            product_thre[code] = product_thre.get(code, 0) + len(data)
-            brand_thre[self.brand[code]] = brand_thre.get(self.brand[code], 0) + len(data)
+        # try:
+        json_comments = re.findall(r"[(](.*)[)]",json_text)[0]
+        comments_dict = json.loads(json_comments)
+        data = []
+        for comment in comments_dict['comments']:
+            # 商家回复：replies  #追评价：afterUserComment -> content  # 图片： images len()
+            brand = self.brand[code]
+            product_id = int(code)
+            content = comment.get("content")
+            append_content = 1 if comment.get("afterUserComment",{}).get("content", False) else 0
+            seller_reply = 1 if comment.get("replies",False) else 0
+            score = comment.get("score", 5)
+            is_good = 1 if score >= 3 else 0
+            image_count = len(comment.get("images", []))
+            d = (brand, name, product_id, content, append_content, seller_reply, score, is_good, image_count,)
+            data.append(d)
+        JDComment().insert_comment(data)
+        product_thre[code] = product_thre.get(code, 0) + len(data)
+        brand_thre[self.brand[code]] = brand_thre.get(self.brand[code], 0) + len(data)
 
-        except:
-            time.sleep(20)
-            error_num+=1
-            if error_num >= 300:
-                raise ValueError("报错，可能ip被封")
-            print("[error ]re cannot match json comments ..")
+        # except:
+        #     time.sleep(20)
+        #     error_num+=1
+        #     if error_num >= 300:
+        #         raise ValueError("报错，可能ip被封")
+        #     print("[error ]re cannot match json comments ..")
 
     def run(self):
         product_count = len(self.products.keys()) - len(self.finish_list)
