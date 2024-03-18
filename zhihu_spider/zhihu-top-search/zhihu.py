@@ -6,6 +6,8 @@ import requests
 
 from lxml import etree
 from bs4 import BeautifulSoup
+from apscheduler.schedulers.blocking import BlockingScheduler
+
 from py_sql import HotSearch,Tags
 
 
@@ -93,6 +95,10 @@ class Spider:
             sql.update(article_id, duration, heat_max, heat_min, heat_avg, heat_sum, answer, follow_count, view_count, datetime_str, version)
 
 
+
+sched = BlockingScheduler()
+
+@sched.scheduled_job('interval', seconds=100)
 def main():
     try:
         top_url = "/api/v3/feed/topstory/hot-lists/total?limit=100"
@@ -114,7 +120,6 @@ def main():
             heat = int(heat.replace("热度","").replace(" ","").replace("万","")) * 10000
             answer = target.get("answer_count")
             spider.save(id,article_title, create_time, new, tag_category, heat, answer, follow_count, view_count)
-            time.sleep(random.randint(8,20))
 
 
     except Exception as e:
@@ -122,4 +127,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    sched.start()
+
